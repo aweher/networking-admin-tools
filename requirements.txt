@@ -1,0 +1,6 @@
+configparser
+paramiko
+datetime
+telnetlib
+platform
+netmiko
