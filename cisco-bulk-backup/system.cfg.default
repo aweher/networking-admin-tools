@@ -1,0 +1,37 @@
+### List of valid device types: ###
+# cisco_ios, cisco_xr, cisco_xe, huawei
+###
+
+# Begin of the config file:
+# Defaults if no specific arguments provided
+[DEFAULT]
+debug = false
+auth_username = cisco
+auth_password = cisco
+device_type = cisco_ios
+mng_proto = ssh
+mng_port = 22
+ssh_key_file = ~/.ssh/id_rsa.pub
+ssh_compression = True
+backup_dir = ./backups
+
+## Place here your devices
+# Example for a cisco device with default values
+[core-switch1]
+ip = 192.168.1.2
+
+# Example for ssh with custom login and password
+[access-edge-ny]
+ip = 192.168.0.1
+auth_username = admin
+auth_password = supersecret
+
+# More complex example: huawei device using telnet in a non standard port
+[huaweidevice]
+ip = 192.168.0.2
+auth_username = operations
+auth_password = iwanttobackup
+device_type = huawei
+mng_proto = telnet
+mng_port = 3343
+backup_dir = ./devices-without-ssh
