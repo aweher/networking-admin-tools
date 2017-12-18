@@ -11,7 +11,6 @@ from netmiko import ConnectHandler
 
 class NetworkDevice:
     """ Managed network device class """
-
     global connection_timeout
     connection_timeout = 10
 
@@ -21,6 +20,7 @@ class NetworkDevice:
         return str(thedate.strftime('%Y-%m-%d-%H%M%S'))
 
     def __init__(self, name, cfg):
+        # Set default values
         self.name=name
         self.cfg=cfg
         self.ip=cfg[name]['ip']
@@ -33,33 +33,25 @@ class NetworkDevice:
         self.ssh_compress=self.cfg['DEFAULT']['ssh_compression']
         self.backupdir=self.cfg['DEFAULT']['backup_dir']
         self.config_name="{}-{}.txt".format(self.name,self.current_datetime())
-
+        # Set custom values
         if self.cfg[name]['device_type'] is not None:
             self.type=self.cfg[name]['device_type']
-
         if self.cfg[name]['auth_username'] is not None:
             self.username=self.cfg[name]['auth_username']
-
         if self.cfg[name]['auth_password'] is not None:
             self.password=self.cfg[name]['auth_password']
-
         if self.cfg[name]['mng_proto'] is not None:
             self.protocol=self.cfg[name]['mng_proto']
-
         if self.cfg[name]['mng_port'] is not None:
             self.port=self.cfg[name]['mng_port']
-
         if self.cfg[name]['ssh_key_file'] is not None:
             self.pubkey=self.cfg[name]['ssh_key_file']
-
         if self.cfg[name]['ssh_compression'] is not None:
             self.ssh_compress=self.cfg[name]['ssh_compression']
-
         if self.cfg[name]['backup_dir'] is not None:
             self.backupdir=self.cfg[name]['backup_dir']
-
         if not self.is_online():
-            print('The device {} ({}) is not online or is not reachable...'.format(self.name, self.ip))
+            print('Info: Device {} ({}) is not online or is not reachable...'.format(self.name, self.ip))
 
     def is_online(self):
         """ Checks if the device is reachable by UNIX ping """
@@ -70,7 +62,9 @@ class NetworkDevice:
     def cmd_showconfig(self):
         """ Return the command to export the configuration """
         commands = {
-            'cisco' : 'show running-config',
+            'cisco_ios' : 'show tech-support',
+            'cisco_xe' : 'show tech-support',
+            'cisco_xr' : 'show tech-support',
             'huawei' : 'display current-configuration',
             'mikrotik' : '/export compact',
         }
@@ -79,7 +73,9 @@ class NetworkDevice:
     def cmd_showdiagnostic(self):
         """ Return the command to diagnose the device status """
         commands = {
-            'cisco' : 'show tech-support',
+            'cisco_ios' : 'show tech-support',
+            'cisco_xe' : 'show tech-support',
+            'cisco_xr' : 'show tech-support',
             'huawei' : 'display diagnostic-information',
         }
         return(commands.get(self.type, "Device type {} not yet supported".format(self.type)))
@@ -108,7 +104,12 @@ class NetworkDevice:
 
         if self.protocol == 'ssh':
             # Connect via SSH
-            cn = ConnectHandler(device_type=self.type,
+            if self.type == 'mikrotik':
+                devicetype = 'linux'
+            else:
+                devicetype = self.type
+
+            cn = ConnectHandler(device_type=devicetype,
                                 ip=self.ip,
                                 username=self.username,
                                 password=self.password)

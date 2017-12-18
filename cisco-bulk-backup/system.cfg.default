@@ -1,5 +1,5 @@
 ### List of valid device types: ###
-# cisco_ios, cisco_xr, cisco_xe, huawei
+# cisco_ios, cisco_xr, cisco_xe, huawei, mikrotik
 ###
 
 # Begin of the config file:
